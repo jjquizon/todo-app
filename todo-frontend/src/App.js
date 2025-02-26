@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import TodoForm from "./components/TodoForm";
+import TodoList from "./components/TodoList";
+
 
 const API_URL = "http://localhost:3000/api/v1/todos"
 
@@ -25,9 +28,7 @@ export default function App() {
 
   };
 
-  
-
-  const fetchTodos = async () => {
+  const fetchTodos = async (description) => {
     try {
       const response = await axios.get(API_URL);
       setTodos(response.data);
@@ -36,12 +37,11 @@ export default function App() {
     }
   };
 
-  const addTodo = async () => {
-    if (!newTodo) return;
+  const addTodo = async (newTodo) => {
+    console.log(newTodo);
     try {
       const response = await axios.post(API_URL, { description: newTodo, completed: false });
       setTodos([...todos, response.data]);
-      setNewTodo("");
     } catch (error) {
       console.error("Error adding todo:", error);
     }
@@ -68,29 +68,8 @@ export default function App() {
   return (
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">Todo List</h1>
-      <div className="flex gap-2 mb-4">
-        <input
-          className="border p-2 flex-grow"
-          type="text"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="Add a new todo"
-        />
-        <button className="bg-blue-500 text-white px-4 py-2" onClick={addTodo}>Add</button>
-      </div>
-      <ul>
-        {todos.map(todo => (
-          <li key={todo.id} className="flex justify-between items-center p-2 border-b">
-            <span
-              className={`cursor-pointer ${todo.completed ? "line-through text-gray-500" : ""}`}
-              onClick={() => toggleTodo(todo.id, todo.completed)}
-            >
-              {todo.description}
-            </span>
-            <button className="bg-red-500 text-white px-2 py-1" onClick={() => deleteTodo(todo.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <TodoForm addTodo={addTodo} />
+      <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
     </div>
   );
 }
