@@ -1,4 +1,7 @@
 class Api::V1::TodosController < ApplicationController
+  before_action :set_csrf_token
+  before_action :check_headers
+
   def index
     todos = Todo.all
     render json: todos
@@ -32,5 +35,13 @@ class Api::V1::TodosController < ApplicationController
 
   def todo_params
     params.require(:todo).permit(:description, :completed)
+  end
+
+  def set_csrf_token
+    response.set_header("X-CSRF-Token", form_authenticity_token)
+  end
+
+  def check_headers
+    p response.headers
   end
 end
